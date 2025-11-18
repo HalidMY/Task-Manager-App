@@ -1,0 +1,104 @@
+import os
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
+
+app = Flask(__name__)
+app.secret_key = "your_secret_key_here"
+
+# -------------------------------------------------------
+# ABSOLUTE PATH FOR SQLITE (WINDOWS SAFE)
+# -------------------------------------------------------
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+DB_PATH = os.path.join(BASE_DIR, "instance", "tasks.db").replace("\\", "/")
+
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db = SQLAlchemy(app)
+
+# -------------------------------------------------------
+# MODELS
+# -------------------------------------------------------
+class User(db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, unique=True, nullable=False)
+    password_hash = db.Column(db.String, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+# -------------------------------------------------------
+# ROUTES
+# -------------------------------------------------------
+@app.route("/")
+def index():
+    return render_template("layout.html")
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        confirm = request.form.get("confirmation")
+
+        if not username:
+            flash("Username required", "danger")
+            return redirect(url_for("register"))
+
+        if not password:
+            flash("Password required", "danger")
+            return redirect(url_for("register"))
+
+        if password != confirm:
+            flash("Passwords do not match", "danger")
+            return redirect(url_for("register"))
+
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            flash("Username already exists", "danger")
+            return redirect(url_for("register"))
+
+        new_user = User(
+            username=username,
+            password_hash=generate_password_hash(password)
+        )
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash("Registered!", "success")
+        return redirect(url_for("login"))
+
+    return render_template("register.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        user = User.query.filter_by(username=username).first()
+
+        if not user or not check_password_hash(user.password_hash, password):
+            flash("Invalid credentials", "danger")
+            return redirect(url_for("login"))
+
+        session["user_id"] = user.id
+        flash("Logged in!", "success")
+        return redirect(url_for("index"))
+
+    return render_template("login.html")
+
+
+
+
+# -------------------------------------------------------
+# CREATE DATABASE
+# -------------------------------------------------------
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+    app.run()
