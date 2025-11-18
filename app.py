@@ -34,7 +34,7 @@ class User(db.Model):
 # -------------------------------------------------------
 @app.route("/")
 def index():
-    return render_template("layout.html")
+    return render_template("index.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -93,7 +93,11 @@ def login():
     return render_template("login.html")
 
 
-
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("You've been logged out successfully", "success")
+    return redirect(url_for("login"))
 
 # -------------------------------------------------------
 # CREATE DATABASE
