@@ -28,6 +28,23 @@ class User(db.Model):
     password_hash = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+class Task(db.Model):
+    __tablename__ = "tasks"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    project_id = db.Column(db.Integer)
+    category_id = db.Column(db.Integer)
+
+    title = db.Column(db.String, nullable=False)
+    description = db.Column(db.String)
+    priority = db.Column(db.String, default="medium")
+    due_date = db.Column(db.Date)
+
+    status = db.Column(db.String, default="todo")
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 # -------------------------------------------------------
 # ROUTES
