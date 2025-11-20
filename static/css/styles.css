@@ -6,6 +6,10 @@ body {
     border-radius: 12px;
 }
 
+.container {
+    max-width: 1200px;
+}
+
 .flash-container {
     display: flex;
     justify-content: center;
@@ -24,6 +28,13 @@ body {
 
 .flash-message.fade-out {
     opacity: 0;
+}
+
+footer {
+    background: #f1f3f5;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    color: #6c757d;
+    font-size: 14px;
 }
 
 .form-box {
@@ -132,6 +143,10 @@ body {
     font-weight: bold;
     letter-spacing: 2px;
     text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
+.navbar-nav {
+    gap: 10px;
 }
 
 .navbar-nav .nav-link {
