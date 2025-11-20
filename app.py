@@ -116,6 +116,31 @@ def logout():
     flash("You've been logged out successfully", "success")
     return redirect(url_for("login"))
 
+@app.route("/task/create", methods=["POST"])
+def task_create():
+    title = request.form.get("title")
+    description = request.form.get("description")
+    priority = request.form.get("priority")
+    due_date = request.form.get("due_date")
+
+    if not title or not due_date:
+        flash("Title and due date are required", "danger")
+        return redirect(url_for("index"))
+    
+    try:
+        due_date = datetime.strptime(due_date, "%Y-%m-%d").date()
+    except ValueError:
+        flash("Invalid date format", "danger")
+        return redirect(url_for("index"))
+    
+    new_task = Task(user_id = session["user_id"], title=title, description=description, priority=priority, due_date=due_date)
+    
+    db.session.add(new_task)
+    db.session.commit()
+
+    flash("Task created successfully", "success")
+    return redirect(url_for("index"))
+
 # -------------------------------------------------------
 # CREATE DATABASE
 # -------------------------------------------------------

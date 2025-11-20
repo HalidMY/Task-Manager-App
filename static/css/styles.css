@@ -102,6 +102,27 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
+.modal-create-btn {
+    animation: buttonAnim 4s ease-in-out infinite;
+    background: linear-gradient(90deg, #ff9966 0%, #ff5e62 49%, #35a6e3 100%);
+    background-size: 200% 200%;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 18px;
+    transition: background 0.3s, box-shadow 0.2s, transform 0.1s;
+}
+
+.modal-create-btn:hover {
+    background: linear-gradient(90deg, #36d1c4 0%, #007bff 100%);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    transform: translateY(-2px) scale(1.03);
+}
+
 .navbar {
     transition: box-shadow 0.2s;
 }
