@@ -52,8 +52,19 @@ class Task(db.Model):
 # ROUTES
 # -------------------------------------------------------
 @app.route("/")
+@login_required()
 def index():
-    return render_template("index.html")
+    user_id = session["user_id"]
+
+    important_task = Task.query.filter(
+        Task.user_id == user_id,
+        Task.status != "done"
+    ).order_by(
+        Task.priority.desc(),
+        Task.due_date.asc()
+    ).first()
+
+    return render_template("index.html", important_task=important_task)
 
 
 @app.route("/register", methods=["GET", "POST"])

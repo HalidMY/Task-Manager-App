@@ -1,8 +1,70 @@
-{% extends "layout.html" %}
+{% extends 'layout.html' %}
 
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<h1 class="mt-4">Welcome to Task Manager</h1>
-<p>You are logged in!</p>
+
+<div class="home-container">
+
+    <!-- Welcome Section -->
+    <div class="welcome-section text-center mb-5">
+        <h2>Welcome back 👋</h2>
+        <p>What would you like to work on today?</p>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+
+        <!-- Create Task -->
+        <div class="action-card" onclick="openCreateTaskModal()">
+            <div class="icon">➕</div>
+            <h5>Create Task</h5>
+            <p>Add something new</p>
+        </div>
+
+        <!-- Task Board -->
+        <a href="{{ url_for('all_tasks') }}" class="action-card">
+            <div class="icon">📋</div>
+            <h5>Task Board</h5>
+            <p>Manage workflow</p>
+        </a>
+
+        <!-- Dashboard -->
+        <a href="{{ url_for('dashboard') }}" class="action-card">
+            <div class="icon">📊</div>
+            <h5>Progress</h5>
+            <p>View analytics</p>
+        </a>
+
+    </div>
+
+    <!-- Most Important Task -->
+    <div class="important-task-section">
+
+        <h5 class="mb-3">🔥 Most Important Task</h5>
+
+        {% if important_task %}
+            <div class="important-task-card task-card priority-{{ important_task.priority }}"
+                data-id="{{ important_task.id }}"
+                data-title="{{ important_task.title }}"
+                data-description="{{ important_task.description }}"
+                data-priority="{{ important_task.priority }}"
+                data-status="{{ important_task.status }}"
+                onclick="openEditModal(this)">
+
+                <strong>{{ important_task.title }}</strong>
+                <span class="badge {{ important_task.priority }}">
+                    {{ important_task.priority|capitalize }}
+                </span>
+            </div>
+        {% else %}
+            <p class="text-muted">No active tasks 🎉</p>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% include '_create_task_modal.html' %}
+
 {% endblock %}
