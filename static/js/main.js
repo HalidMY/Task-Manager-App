@@ -72,3 +72,8 @@ document.getElementById("editTaskForm").addEventListener("submit", function(e){
         })
     }).then(() => location.reload());
 });
+
+document.querySelectorAll(".progress-bar").forEach(bar => {
+    const progress = bar.dataset.progress || 0;
+    bar.style.width = progress + "%";
+});

@@ -1,0 +1,87 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Dashboard
+{% endblock %}
+
+{% block content %}
+    <div class="dashboard container">
+
+        <h3 class="mb-4 fw-bold">Your Dashboard</h3>
+
+        <!-- STAT CARDS -->
+        <div class="row g-4 mb-5">
+
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h6>Total Tasks</h6>
+                    <h2>{{ total_tasks }}</h2>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="stat-card todo">
+                    <h6>To Do</h6>
+                    <h2>{{ todo_count }}</h2>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="stat-card {% if in_progress_count > 0 %}in-progress{% endif %}">
+                    <h6>In Progress</h6>
+                    {% if in_progress_count == 0 %}
+                        <span class="text-muted">No tasks</span>
+                    {% else %}
+                        <h2>{{ in_progress_count }}</h2>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="stat-card done">
+                    <h6>Done</h6>
+                    <h2>{{ done_count }}</h2>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- OVERALL PROGRESS -->
+        <div class="mb-5">
+            <div class="d-flex justify-content-between mb-2">
+                <h6 class="fw-semibold">Overall Progress</h6>
+                <span class="text-muted">{{ completion_percentage }}%</span>
+            </div>
+
+            <div class="progress" style="height: 10px; border-radius: 8px;">
+                <div class="progress-bar progress-animated"
+                    data-progress="{{ completion_percentage }}">
+                </div>
+            </div>
+        </div>
+
+        <!-- TODAY'S FOCUS SECTION -->
+        <h5 class="mb-3 fw-semibold">Today's Focus</h5>
+
+        {% if today_tasks|length > 0 %}
+            {% for task in today_tasks %}
+                <div class="task-card dashboard-task"
+                    data-id="{{ task.id }}"
+                    data-title="{{ task.title }}"
+                    data-description="{{ task.description }}"
+                    data-priority="{{ task.priority }}"
+                    data-status="{{ task.status }}"
+                    onclick="openEditModal(this)">
+
+                    <strong>{{ task.title }}</strong>
+
+                    <span class="badge priority-badge {{ task.priority }}">
+                        {{ task.priority|capitalize }}
+                    </span>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">No priority tasks for today 🎯</p>
+        {% endif %}
+    </div>
+{% endblock %}

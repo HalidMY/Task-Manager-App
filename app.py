@@ -226,6 +226,38 @@ def settings():
     
     return render_template("settings.html", user=user)
 
+@app.route("/dashboard")
+@login_required()
+def dashboard():
+    user_id = session["user_id"]
+
+    total_tasks = Task.query.filter_by(user_id=user_id).count()
+    todo_count = Task.query.filter_by(user_id=user_id, status="todo").count()
+    in_progress_count = Task.query.filter_by(user_id=user_id, status="in_progress").count()
+    done_count = Task.query.filter_by(user_id=user_id, status="done").count()
+
+    completion_percentage = 0
+    if total_tasks > 0:
+        completion_percentage = round((done_count / total_tasks) * 100)
+
+    today_tasks = Task.query.filter(
+        Task.user_id == user_id,
+        Task.status != "done"
+    ).order_by(
+        Task.priority.desc(),
+        Task.due_date.asc()
+    ).limit(3).all()
+
+    return render_template(
+        "dashboard.html",
+        total_tasks=total_tasks,
+        todo_count=todo_count,
+        in_progress_count=in_progress_count,
+        done_count=done_count,
+        completion_percentage=completion_percentage,
+        today_tasks=today_tasks
+    )
+
 # -------------------------------------------------------
 # CREATE DATABASE
 # -------------------------------------------------------

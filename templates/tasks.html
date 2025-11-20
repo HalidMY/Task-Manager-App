@@ -49,7 +49,7 @@
         <div class="kanban-column" data-status="done">
             <h5>DONE</h5>
             {% for task in done_tasks %}
-                <div class="task-card" draggable="true" data-id="{{ task.id }}" data-title="{{ task.title }}" data-description="{{ task.description }}" data-priority="{{ task.priority }}" data-status="{{ task.status }}">
+                <div class="task-card {{ 'done' if task.status == 'done' }}" draggable="true" data-id="{{ task.id }}" data-title="{{ task.title }}" data-description="{{ task.description }}" data-priority="{{ task.priority }}" data-status="{{ task.status }} {{ 'done' if task.status == 'done' }}">
                     <strong>{{ task.title }}</strong>
                     <div class="task-footer">
                         <span class="priority-icon {{ task.priority }}">
