@@ -51,6 +51,57 @@ class Task(db.Model):
 # -------------------------------------------------------
 # ROUTES
 # -------------------------------------------------------
+
+@app.route("/tasks")
+@login_required()
+def all_tasks():
+    user_id = session["user_id"]
+
+    todo_tasks = Task.query.filter_by(user_id=user_id, status="todo").all()
+    in_progress_tasks = Task.query.filter_by(user_id=user_id, status="in_progress").all()
+    done_tasks = Task.query.filter_by(user_id=user_id, status="done").all()
+
+    return render_template(
+        "tasks.html",
+        todo_tasks=todo_tasks,
+        in_progress_tasks=in_progress_tasks,
+        done_tasks=done_tasks
+    )
+
+
+@app.route("/dashboard")
+@login_required()
+def dashboard():
+    user_id = session["user_id"]
+
+    total_tasks = Task.query.filter_by(user_id=user_id).count()
+    todo_count = Task.query.filter_by(user_id=user_id, status="todo").count()
+    in_progress_count = Task.query.filter_by(user_id=user_id, status="in_progress").count()
+    done_count = Task.query.filter_by(user_id=user_id, status="done").count()
+
+    completion_percentage = 0
+    if total_tasks > 0:
+        completion_percentage = round((done_count / total_tasks) * 100)
+
+    today_tasks = Task.query.filter(
+        Task.user_id == user_id,
+        Task.status != "done"
+    ).order_by(
+        Task.priority.desc(),
+        Task.due_date.asc()
+    ).limit(3).all()
+
+    return render_template(
+        "dashboard.html",
+        total_tasks=total_tasks,
+        todo_count=todo_count,
+        in_progress_count=in_progress_count,
+        done_count=done_count,
+        completion_percentage=completion_percentage,
+        today_tasks=today_tasks
+    )
+
+
 @app.route("/")
 @login_required()
 def index():
@@ -65,6 +116,33 @@ def index():
     ).first()
 
     return render_template("index.html", important_task=important_task)
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        user = User.query.filter_by(username=username).first()
+
+        if not user or not check_password_hash(user.password_hash, password):
+            flash("Invalid credentials", "danger")
+            return redirect(url_for("login"))
+
+        session["user_id"] = user.id
+        flash("Logged in!", "success")
+        return redirect(url_for("index"))
+
+    return render_template("login.html")
+
+
+@app.route("/logout")
+@login_required()
+def logout():
+    session.clear()
+    flash("You've been logged out successfully", "success")
+    return redirect(url_for("login"))
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -104,105 +182,6 @@ def register():
     return render_template("register.html")
 
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-
-        user = User.query.filter_by(username=username).first()
-
-        if not user or not check_password_hash(user.password_hash, password):
-            flash("Invalid credentials", "danger")
-            return redirect(url_for("login"))
-
-        session["user_id"] = user.id
-        flash("Logged in!", "success")
-        return redirect(url_for("index"))
-
-    return render_template("login.html")
-
-
-@app.route("/logout")
-@login_required()
-def logout():
-    session.clear()
-    flash("You've been logged out successfully", "success")
-    return redirect(url_for("login"))
-
-@app.route("/task/create", methods=["POST"])
-@login_required()
-def task_create():
-    title = request.form.get("title")
-    description = request.form.get("description")
-    priority = request.form.get("priority")
-    due_date = request.form.get("due_date")
-
-    if not title or not due_date:
-        flash("Title and due date are required", "danger")
-        return redirect(url_for("index"))
-    
-    try:
-        due_date = datetime.strptime(due_date, "%Y-%m-%d").date()
-    except ValueError:
-        flash("Invalid date format", "danger")
-        return redirect(url_for("index"))
-    
-    new_task = Task(user_id = session["user_id"], title=title, description=description, priority=priority, due_date=due_date)
-    
-    db.session.add(new_task)
-    db.session.commit()
-
-    flash("Task created successfully", "success")
-    return redirect(url_for("index"))
-
-@app.route("/tasks")
-@login_required()
-def all_tasks():
-    user_id = session["user_id"]
-
-    todo_tasks = Task.query.filter_by(user_id=user_id, status="todo").all()
-    in_progress_tasks =Task.query.filter_by(user_id=user_id, status="in_progress").all()
-    done_tasks = Task.query.filter_by(user_id=user_id, status="done").all()
-
-    return render_template("tasks.html", todo_tasks=todo_tasks, in_progress_tasks=in_progress_tasks, done_tasks=done_tasks)
-
-@app.route("/task/update-status/<int:task_id>", methods=["POST"])
-@login_required()
-def update_task_status(task_id):
-    data = request.get_json()
-    new_status = data.get("status")
-
-    task = Task.query.filter_by(id=task_id, user_id = session["user_id"]).first()
-
-    if not task:
-        return jsonify({"error": "Task not found"}), 404
-    
-    task.status = new_status
-    task.updated_at = datetime.utcnow()
-    db.session.commit()
-
-    return jsonify({"success": True})
-
-@app.route("/task/update/<int:task_id>", methods=["POST"])
-@login_required()
-def update_task(task_id):
-    data = request.get_json()
-    task = Task.query.filter_by(id=task_id, user_id = session["user_id"]).first()
-
-    if not task:
-        return jsonify({"error": "Task not found"}), 404
-    
-    task.title = data["title"]
-    task.description = data["description"]
-    task.priority = data["priority"]
-    task.status = data["status"]
-    task.updated_at = datetime.utcnow()
-
-    db.session.commit()
-    
-    return jsonify({"success": True})
-
 @app.route("/settings", methods=["GET", "POST"])
 @login_required()
 def settings():
@@ -237,37 +216,76 @@ def settings():
     
     return render_template("settings.html", user=user)
 
-@app.route("/dashboard")
+
+@app.route("/task/create", methods=["POST"])
 @login_required()
-def dashboard():
-    user_id = session["user_id"]
+def task_create():
+    title = request.form.get("title")
+    description = request.form.get("description")
+    priority = request.form.get("priority")
+    due_date = request.form.get("due_date")
 
-    total_tasks = Task.query.filter_by(user_id=user_id).count()
-    todo_count = Task.query.filter_by(user_id=user_id, status="todo").count()
-    in_progress_count = Task.query.filter_by(user_id=user_id, status="in_progress").count()
-    done_count = Task.query.filter_by(user_id=user_id, status="done").count()
-
-    completion_percentage = 0
-    if total_tasks > 0:
-        completion_percentage = round((done_count / total_tasks) * 100)
-
-    today_tasks = Task.query.filter(
-        Task.user_id == user_id,
-        Task.status != "done"
-    ).order_by(
-        Task.priority.desc(),
-        Task.due_date.asc()
-    ).limit(3).all()
-
-    return render_template(
-        "dashboard.html",
-        total_tasks=total_tasks,
-        todo_count=todo_count,
-        in_progress_count=in_progress_count,
-        done_count=done_count,
-        completion_percentage=completion_percentage,
-        today_tasks=today_tasks
+    if not title or not due_date:
+        flash("Title and due date are required", "danger")
+        return redirect(url_for("index"))
+    
+    try:
+        due_date = datetime.strptime(due_date, "%Y-%m-%d").date()
+    except ValueError:
+        flash("Invalid date format", "danger")
+        return redirect(url_for("index"))
+    
+    new_task = Task(
+        user_id=session["user_id"],
+        title=title,
+        description=description,
+        priority=priority,
+        due_date=due_date
     )
+    
+    db.session.add(new_task)
+    db.session.commit()
+
+    flash("Task created successfully", "success")
+    return redirect(url_for("index"))
+
+
+@app.route("/task/update/<int:task_id>", methods=["POST"])
+@login_required()
+def update_task(task_id):
+    data = request.get_json()
+    task = Task.query.filter_by(id=task_id, user_id=session["user_id"]).first()
+
+    if not task:
+        return jsonify({"error": "Task not found"}), 404
+    
+    task.title = data["title"]
+    task.description = data["description"]
+    task.priority = data["priority"]
+    task.status = data["status"]
+    task.updated_at = datetime.utcnow()
+
+    db.session.commit()
+    
+    return jsonify({"success": True})
+
+
+@app.route("/task/update-status/<int:task_id>", methods=["POST"])
+@login_required()
+def update_task_status(task_id):
+    data = request.get_json()
+    new_status = data.get("status")
+
+    task = Task.query.filter_by(id=task_id, user_id=session["user_id"]).first()
+
+    if not task:
+        return jsonify({"error": "Task not found"}), 404
+    
+    task.status = new_status
+    task.updated_at = datetime.utcnow()
+    db.session.commit()
+
+    return jsonify({"success": True})
 
 # -------------------------------------------------------
 # CREATE DATABASE

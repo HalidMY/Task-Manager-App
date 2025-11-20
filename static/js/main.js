@@ -12,11 +12,24 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-document.querySelectorAll(".task-card").forEach(card => {
-    card.addEventListener("dragstart", e => {
-        e.dataTransfer.setData("task_id", card.dataset.id);
-    });
+
+document.getElementById("editTaskForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const id = document.getElementById("edit-task-id").value;
+
+    fetch(`/task/update/${id}`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            title: document.getElementById("edit-title").value,
+            description: document.getElementById("edit-description").value,
+            priority: document.getElementById("edit-priority").value,
+            status: document.getElementById("edit-status").value
+        })
+    }).then(() => location.reload());
 });
+
 
 document.querySelectorAll(".kanban-column").forEach(column => {
     column.addEventListener("dragover", e => e.preventDefault());
@@ -37,6 +50,25 @@ document.querySelectorAll(".kanban-column").forEach(column => {
     });
 });
 
+
+document.querySelectorAll(".progress-bar").forEach(bar => {
+    const progress = bar.dataset.progress || 0;
+    bar.style.width = progress + "%";
+});
+
+
+document.querySelectorAll(".task-card").forEach(card => {
+    card.addEventListener("click", () => openEditModal(card));
+});
+
+
+document.querySelectorAll(".task-card").forEach(card => {
+    card.addEventListener("dragstart", e => {
+        e.dataTransfer.setData("task_id", card.dataset.id);
+    });
+});
+
+
 function openEditModal(card) {
     const modalElement = document.getElementById("editTaskModal");
     const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
@@ -49,31 +81,3 @@ function openEditModal(card) {
 
     modal.show();
 }
-
-
-
-document.querySelectorAll(".task-card").forEach(card => {
-    card.addEventListener("click", () => openEditModal(card));
-});
-
-document.getElementById("editTaskForm").addEventListener("submit", function(e){
-    e.preventDefault();
-
-    const id = document.getElementById("edit-task-id").value;
-
-    fetch(`/task/update/${id}`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            title: document.getElementById("edit-title").value,
-            description: document.getElementById("edit-description").value,
-            priority: document.getElementById("edit-priority").value,
-            status: document.getElementById("edit-status").value
-        })
-    }).then(() => location.reload());
-});
-
-document.querySelectorAll(".progress-bar").forEach(bar => {
-    const progress = bar.dataset.progress || 0;
-    bar.style.width = progress + "%";
-});
