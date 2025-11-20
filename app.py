@@ -192,6 +192,40 @@ def update_task(task_id):
     
     return jsonify({"success": True})
 
+@app.route("/settings", methods=["GET", "POST"])
+@login_required()
+def settings():
+    user = User.query.filter_by(id=session["user_id"]).first()
+
+    if request.method == "POST":
+        new_username = request.form.get("username").strip()
+        current_password = request.form.get("current_password")
+        new_password = request.form.get("new_password")
+        confirm_password = request.form.get("confirm_password")
+
+        if new_username and new_username != user.username:
+            existing_user = User.query.filter_by(username=new_username).first()
+            if existing_user:
+                flash("Username already taken", "danger")
+                return redirect(url_for("settings"))
+        user.username = new_username
+
+        if new_password:
+            if not check_password_hash(user.password_hash, current_password):
+                flash("Current password is incorrect", "danger")
+                return redirect(url_for("settings"))
+            if new_password != confirm_password:
+                flash("New password do not match", "danger")
+                return redirect(url_for("settings"))
+            
+            user.password_hash = generate_password_hash(new_password)
+
+        db.session.commit()
+        flash("Settings updated successfully", "success")
+        return redirect(url_for("settings"))
+    
+    return render_template("settings.html", user=user)
+
 # -------------------------------------------------------
 # CREATE DATABASE
 # -------------------------------------------------------
