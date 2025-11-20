@@ -3,6 +3,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from utils.helpers import *
+from flask import jsonify
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"
@@ -111,12 +113,14 @@ def login():
 
 
 @app.route("/logout")
+@login_required()
 def logout():
     session.clear()
     flash("You've been logged out successfully", "success")
     return redirect(url_for("login"))
 
 @app.route("/task/create", methods=["POST"])
+@login_required()
 def task_create():
     title = request.form.get("title")
     description = request.form.get("description")
@@ -140,6 +144,34 @@ def task_create():
 
     flash("Task created successfully", "success")
     return redirect(url_for("index"))
+
+@app.route("/tasks")
+@login_required()
+def all_tasks():
+    user_id = session["user_id"]
+
+    todo_tasks = Task.query.filter_by(user_id=user_id, status="todo").all()
+    in_progress_tasks =Task.query.filter_by(user_id=user_id, status="in_progress").all()
+    done_tasks = Task.query.filter_by(user_id=user_id, status="done").all()
+
+    return render_template("tasks.html", todo_tasks=todo_tasks, in_progress_tasks=in_progress_tasks, done_tasks=done_tasks)
+
+@app.route("/task/update-status/<int:task_id>", methods=["POST"])
+@login_required()
+def update_task_status(task_id):
+    data = request.get_json()
+    new_status = data.get("status")
+
+    task = Task.query.filter_by(id=task_id, user_id = session["user_id"]).first()
+
+    if not task:
+        return jsonify({"error": "Task not found"}), 404
+    
+    task.status = new_status
+    task.updated_at = datetime.utcnow()
+    db.session.commit()
+
+    return jsonify({"success": True})
 
 # -------------------------------------------------------
 # CREATE DATABASE
