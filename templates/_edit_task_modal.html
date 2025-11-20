@@ -1,0 +1,48 @@
+<div class="modal fade" id="editTaskModal" tabindex="-1" data-bs-backdrop="true" data-bs-keyboard="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header gradient-custom text-white">
+                <h5 class="modal-title">Edit Task</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form id="editTaskForm">
+                <input type="hidden" id="edit-task-id">
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Title</label>
+                        <input type="text" class="form-control" id="edit-title">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Description</label>
+                        <textarea class="form-control" id="edit-description"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Priority</label>
+                        <select class="form-select" id="edit-priority">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Status</label>
+                        <select class="form-select" id="edit-status">
+                            <option value="todo">To Do</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="done">Done</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                        <button type="submit" class="btn modal-create-btn">Save Changes</button>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>

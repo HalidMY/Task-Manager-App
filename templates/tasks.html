@@ -9,8 +9,19 @@
         <div class="kanban-column" data-status="todo">
             <h5>TO DO</h5>
             {% for task in todo_tasks %}
-                <div class="task-card" draggable="true" data-id="{{ task.id }}">
+                <div class="task-card" draggable="true" data-id="{{ task.id }}" data-title="{{ task.title }}" data-description="{{ task.description }}" data-priority="{{ task.priority }}" data-status="{{ task.status }}">
                     <strong>{{ task.title }}</strong>
+                    <div class="task-footer">
+                        <span class="priority-icon {{ task.priority }}">
+                            {% if task.priority == "high" %}
+                                ▲
+                            {% elif task.priority == "medium" %}
+                                =
+                            {% else %}
+                                ▼
+                            {% endif %}
+                        </span>
+                    </div>
                 </div>
             {% endfor %}
         </div>
@@ -18,8 +29,19 @@
         <div class="kanban-column" data-status="in_progress">
             <h5>IN PROGRESS</h5>
             {% for task in in_progress_tasks %}
-                <div class="task-card" draggable="true" data-id="{{ task.id }}">
+                <div class="task-card" draggable="true" data-id="{{ task.id }}" data-title="{{ task.title }}" data-description="{{ task.description }}" data-priority="{{ task.priority }}" data-status="{{ task.status }}">
                     <strong>{{ task.title }}</strong>
+                    <div class="task-footer">
+                        <span class="priority-icon {{ task.priority }}">
+                            {% if task.priority == "high" %}
+                                ▲
+                            {% elif task.priority == "medium" %}
+                                =
+                            {% else %}
+                                ▼
+                            {% endif %}
+                        </span>
+                    </div>
                 </div>
             {% endfor %}
         </div>
@@ -27,8 +49,19 @@
         <div class="kanban-column" data-status="done">
             <h5>DONE</h5>
             {% for task in done_tasks %}
-                <div class="task-card" draggable="true" data-id="{{ task.id }}">
+                <div class="task-card" draggable="true" data-id="{{ task.id }}" data-title="{{ task.title }}" data-description="{{ task.description }}" data-priority="{{ task.priority }}" data-status="{{ task.status }}">
                     <strong>{{ task.title }}</strong>
+                    <div class="task-footer">
+                        <span class="priority-icon {{ task.priority }}">
+                            {% if task.priority == "high" %}
+                                ▲
+                            {% elif task.priority == "medium" %}
+                                =
+                            {% else %}
+                                ▼
+                            {% endif %}
+                        </span>
+                    </div>
                 </div>
             {% endfor %}
         </div>

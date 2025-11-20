@@ -173,6 +173,25 @@ def update_task_status(task_id):
 
     return jsonify({"success": True})
 
+@app.route("/task/update/<int:task_id>", methods=["POST"])
+@login_required()
+def update_task(task_id):
+    data = request.get_json()
+    task = Task.query.filter_by(id=task_id, user_id = session["user_id"]).first()
+
+    if not task:
+        return jsonify({"error": "Task not found"}), 404
+    
+    task.title = data["title"]
+    task.description = data["description"]
+    task.priority = data["priority"]
+    task.status = data["status"]
+    task.updated_at = datetime.utcnow()
+
+    db.session.commit()
+    
+    return jsonify({"success": True})
+
 # -------------------------------------------------------
 # CREATE DATABASE
 # -------------------------------------------------------

@@ -184,13 +184,31 @@ footer {
     color: #ffe776 !important;
 }
 
+.priority-icon {
+    font-size: 18px;
+    font-weight: bold;
+    float: right;
+}
+
+.priority-icon.high {
+    color: #ff6b00;
+}
+
+.priority-icon.medium {
+    color: #f0b429;
+}
+
+.priority-icon.low {
+    color: #4aa3ff;
+}
+
 .task-card {
     background: white;
-    padding: 14px;
-    border-radius: 8px;
+    border-radius: 10px;
+    padding: 12px;
     margin-bottom: 12px;
-    cursor: grab;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     transition: transform 0.15s ease;
 }
 
@@ -199,3 +217,12 @@ footer {
     transform: scale(1.02);
 }
 
+.task-card:hover {
+    transform: translateY(-3px);
+}
+
+.task-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
