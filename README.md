@@ -22,9 +22,6 @@ using a clean Kanban workflow.
 
 ## 🖥️ Demo Screenshots
 
-> Place your screenshots inside a folder named `screenshots/` in the
-> root of the project.
-
 ### 🔐 Login Page
 
 ![Login Page](screenshots/login.png)
