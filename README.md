@@ -28,23 +28,23 @@ using a clean Kanban workflow.
 
 ### 🏠 Home Page
 
-Quick access to key actions and Most Important Task ![Home
-Page](screenshots/home.png)
+Quick access to key actions and Most Important Task\
+![Home Page](screenshots/home.png)
 
 ### 📊 Dashboard Analytics
 
-Task stats and overall completion progress
+Task stats and overall completion progress\
 ![Dashboard](screenshots/dashboard.png)
 
 ### 🗂 Kanban Board
 
-Drag & drop tasks between workflow stages ![Kanban
-Board](screenshots/kanban.png)
+Drag & drop tasks between workflow stages\
+![Kanban Board](screenshots/kanban.png)
 
 ### ➕ Create Task Modal
 
-Add new tasks using a clean modal interface ![Create
-Task](screenshots/create-task.png)
+Add new tasks using a clean modal interface\
+![Create Task](screenshots/create-task.png)
 
 ------------------------------------------------------------------------
 
@@ -92,7 +92,7 @@ source venv/bin/activate
 ### 3. Install dependencies
 
 ``` bash
-pip install -r requirements.txt
+pip install flask flask_sqlalchemy werkzeug
 ```
 
 ### 4. Run the application
@@ -103,33 +103,45 @@ python app.py
 
 Open your browser:
 
-    http://127.0.0.1:5000/
+http://127.0.0.1:5000/
 
 ------------------------------------------------------------------------
 
-## 📂 Project Structure
+## 📂 Project Structure (Updated)
 
-    Task-Manager-App/
+    TODO_APP/
     │
-    ├── app.py
+    ├── __pycache__/
     ├── instance/
     │   └── tasks.db
+    ├── screenshots/
+    │   ├── create-task.png
+    │   ├── dashboard.png
+    │   ├── home.png
+    │   ├── kanban.png
+    │   └── login.png
     ├── static/
     │   ├── css/
-    │   │   └── style.css
-    │   ├── js/
-    │   │   └── script.js
-    │   └── img/
+    │   │   └── styles.css
+    │   └── js/
+    │       ├── home.js
+    │       └── main.js
     ├── templates/
+    │   ├── _create_task_modal.html
+    │   ├── _edit_task_modal.html
+    │   ├── dashboard.html
     │   ├── index.html
+    │   ├── layout.html
     │   ├── login.html
     │   ├── register.html
-    │   ├── tasks.html
-    │   ├── dashboard.html
-    │   └── settings.html
+    │   ├── settings.html
+    │   └── tasks.html
     ├── utils/
+    │   ├── __pycache__/
     │   └── helpers.py
-    ├── requirements.txt
+    ├── venv/
+    ├── .gitignore
+    ├── app.py
     └── README.md
 
 ------------------------------------------------------------------------
@@ -163,7 +175,6 @@ GitHub: https://github.com/HalidMY
 
 Project Repository:\
 👉 https://github.com/HalidMY/Task-Manager-App
-
 
 ------------------------------------------------------------------------
 
